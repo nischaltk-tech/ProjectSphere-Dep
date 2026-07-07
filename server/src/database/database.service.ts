@@ -35,6 +35,23 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
     `);
+
+    await this.query(`
+      CREATE TABLE IF NOT EXISTS project (
+        id BIGSERIAL PRIMARY KEY,
+        student_id BIGINT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL,
+        technologies_used JSONB NOT NULL DEFAULT '[]'::jsonb,
+        team_members JSONB NOT NULL DEFAULT '[]'::jsonb,
+        images JSONB NOT NULL DEFAULT '[]'::jsonb,
+        videos JSONB NOT NULL DEFAULT '[]'::jsonb,
+        documentation JSONB NOT NULL DEFAULT '[]'::jsonb,
+        external_links JSONB NOT NULL DEFAULT '[]'::jsonb,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
   }
 
   query<T extends QueryResultRow = QueryResultRow>(

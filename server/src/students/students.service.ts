@@ -93,13 +93,13 @@ export class StudentsService {
     const student = result.rows[0];
 
     if (!student) {
-      throw new UnauthorizedException("Invalid email or password.");
+      throw new UnauthorizedException("Invalid username/password");
     }
 
     const passwordMatches = await bcrypt.compare(dto.password, student.password_hash);
 
     if (!passwordMatches) {
-      throw new UnauthorizedException("Invalid email or password.");
+      throw new UnauthorizedException("Invalid username/password");
     }
 
     return {

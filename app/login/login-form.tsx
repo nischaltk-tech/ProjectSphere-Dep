@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { ArrowRight, LockKeyhole, Mail } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4000";
 
@@ -11,11 +12,25 @@ type Status = {
 };
 
 export function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [status, setStatus] = useState<Status | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      const search = new URLSearchParams(window.location.search);
+
+      if (search.get("error")) {
+        setStatus({
+          type: "error",
+          message: "Invalid username/password",
+        });
+      }
+    });
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -33,13 +48,19 @@ export function LoginForm() {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(getApiMessage(data, "Login failed."));
+        throw new Error(
+          response.status === 401
+            ? "Invalid username/password"
+            : getApiMessage(data, "Login failed."),
+        );
       }
 
+      localStorage.setItem("projectsphere.student", JSON.stringify(data.student));
       setStatus({
         type: "success",
         message: data.message ?? "Login successful.",
       });
+      router.push("/dashboard");
     } catch (error) {
       setStatus({
         type: "error",
