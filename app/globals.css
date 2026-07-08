@@ -464,9 +464,16 @@ textarea {
   color: #ffffff;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
 .icon-text-button,
 .secondary-button,
-.project-actions button {
+.project-actions button,
+.profile-icon-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -483,9 +490,16 @@ textarea {
 
 .icon-text-button:hover,
 .secondary-button:hover,
-.project-actions button:hover {
+.project-actions button:hover,
+.profile-icon-button:hover {
   border-color: rgba(4, 127, 122, 0.3);
   color: var(--teal-dark);
+}
+
+.profile-icon-button {
+  width: 2.6rem;
+  padding: 0;
+  border-radius: 999px;
 }
 
 .dashboard-hero {
@@ -697,6 +711,34 @@ textarea {
   margin: 1.25rem auto 0;
 }
 
+.profile-panel {
+  max-width: 58rem;
+  margin: 1rem auto 0;
+  border: 1px solid rgba(220, 227, 237, 0.9);
+  border-radius: 0.5rem;
+  padding: clamp(1.2rem, 4vw, 2rem);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow);
+}
+
+.profile-heading {
+  margin-bottom: 1.35rem;
+}
+
+.profile-heading h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.profile-heading p:not(.eyebrow) {
+  max-width: 42rem;
+  margin: 0.8rem 0 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 .resource-group {
   margin-top: 1rem;
 }
@@ -787,5 +829,9 @@ textarea {
 
   .project-actions {
     flex-wrap: wrap;
+  }
+
+  .topbar-actions {
+    justify-content: space-between;
   }
 }

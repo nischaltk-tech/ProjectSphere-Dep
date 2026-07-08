@@ -8,7 +8,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
   const allowedOrigins = config
-    .get<string>("FRONTEND_ORIGIN", "http://127.0.0.1:3001,http://localhost:3000")
+    .get<string>(
+      "FRONTEND_ORIGIN",
+      "http://127.0.0.1:3001,http://localhost:3001",
+    )
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);

@@ -1,6 +1,7 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put } from "@nestjs/common";
 import { LoginStudentDto } from "./dto/login-student.dto";
 import { RegisterStudentDto } from "./dto/register-student.dto";
+import { UpdateStudentDto } from "./dto/update-student.dto";
 import { StudentsService } from "./students.service";
 
 @Controller("students")
@@ -15,5 +16,15 @@ export class StudentsController {
   @Post("login")
   login(@Body() dto: LoginStudentDto) {
     return this.studentsService.login(dto);
+  }
+
+  @Get(":id")
+  detail(@Param("id") id: string) {
+    return this.studentsService.detail(id);
+  }
+
+  @Put(":id")
+  update(@Param("id") id: string, @Body() dto: UpdateStudentDto) {
+    return this.studentsService.update(id, dto);
   }
 }

@@ -10,6 +10,7 @@ import {
   Pencil,
   Plus,
   Trash2,
+  UserRound,
   UsersRound,
   Video,
 } from "lucide-react";
@@ -269,10 +270,21 @@ export function Dashboard() {
           <span>ProjectSphere</span>
         </div>
 
-        <button className="icon-text-button" type="button" onClick={logout}>
-          <LogOut aria-hidden="true" size={18} />
-          Logout
-        </button>
+        <div className="topbar-actions">
+          <button
+            className="profile-icon-button"
+            type="button"
+            onClick={() => router.push("/profile")}
+            title="Open profile"
+            aria-label="Open profile"
+          >
+            <UserRound aria-hidden="true" size={20} />
+          </button>
+          <button className="icon-text-button" type="button" onClick={logout}>
+            <LogOut aria-hidden="true" size={18} />
+            Logout
+          </button>
+        </div>
       </header>
 
       <section className="dashboard-hero">
