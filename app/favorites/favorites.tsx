@@ -253,6 +253,7 @@ export function Favorites() {
                   </div>
                   <div className="project-actions">
                     <button
+                      className="project-favorite-button active"
                       type="button"
                       onClick={() => removeFavorite("projects", project.id)}
                       title="Remove favorite project"

@@ -711,6 +711,106 @@ textarea {
   gap: 0.45rem;
 }
 
+.project-actions button {
+  min-width: 2.6rem;
+  border-color: rgba(207, 216, 229, 0.95);
+  background: linear-gradient(180deg, #ffffff 0%, #f7fafc 100%);
+  box-shadow: 0 8px 18px rgba(28, 39, 57, 0.08);
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.project-actions button:hover {
+  background: #ffffff;
+  box-shadow: 0 12px 24px rgba(28, 39, 57, 0.12);
+  transform: translateY(-1px);
+}
+
+.project-favorite-button {
+  color: var(--muted);
+}
+
+.project-favorite-button.active,
+.favorite-icon-active {
+  color: var(--coral);
+}
+
+.project-favorite-button.active {
+  border-color: rgba(224, 90, 71, 0.32);
+  background: linear-gradient(180deg, rgba(255, 246, 244, 0.98), rgba(255, 236, 232, 0.9));
+  box-shadow: 0 10px 24px rgba(224, 90, 71, 0.14);
+}
+
+.project-delete-button {
+  border-color: rgba(180, 35, 24, 0.28) !important;
+  background: linear-gradient(180deg, rgba(255, 250, 249, 0.98), rgba(254, 242, 242, 0.96)) !important;
+  color: #b42318 !important;
+}
+
+.project-delete-button:hover {
+  border-color: rgba(180, 35, 24, 0.45) !important;
+  background: #b42318 !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 26px rgba(180, 35, 24, 0.18) !important;
+}
+
+.favorite-wide-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 2.85rem;
+  margin-top: 1.15rem;
+  border: 1px solid rgba(207, 216, 229, 0.95);
+  border-radius: 0.45rem;
+  padding: 0.68rem 1rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fafc 100%);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 850;
+  box-shadow: 0 10px 24px rgba(28, 39, 57, 0.1);
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.favorite-wide-button:hover {
+  border-color: rgba(4, 127, 122, 0.3);
+  background: #ffffff;
+  color: var(--teal-dark);
+  box-shadow: 0 14px 30px rgba(28, 39, 57, 0.14);
+  transform: translateY(-1px);
+}
+
+.favorite-wide-button.active {
+  border-color: rgba(224, 90, 71, 0.35);
+  background: linear-gradient(180deg, rgba(255, 246, 244, 0.98), rgba(255, 236, 232, 0.9));
+  color: var(--coral);
+  box-shadow: 0 12px 28px rgba(224, 90, 71, 0.16);
+}
+
+.project-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.15rem;
+}
+
+.project-detail-actions .favorite-wide-button {
+  margin-top: 0;
+}
+
+.project-edit-panel {
+  margin-top: 1.2rem;
+}
+
 .tag-row {
   display: flex;
   flex-wrap: wrap;

@@ -3,9 +3,6 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import {
   Heart,
-  Pencil,
-  Plus,
-  Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AppHeader } from "../components/app-header";
@@ -68,7 +65,6 @@ export function Dashboard() {
   const [student, setStudent] = useState<Student | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [favoriteProjects, setFavoriteProjects] = useState<string[]>([]);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [form, setForm] = useState<ProjectFormState>(emptyForm);
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(
     null,
@@ -139,22 +135,7 @@ export function Dashboard() {
     }));
   }
 
-  function startEdit(project: Project) {
-    setEditingProject(project);
-    setForm({
-      title: project.title,
-      description: project.description,
-      technologiesUsed: project.technologiesUsed.join(", "),
-      teamMembers: project.teamMembers.join(", "),
-      images: project.images.join("\n"),
-      videos: project.videos.join("\n"),
-      documentation: linksToText(project.documentation),
-      externalLinks: linksToText(project.externalLinks),
-    });
-  }
-
   function resetForm() {
-    setEditingProject(null);
     setForm(emptyForm);
   }
 
@@ -182,18 +163,13 @@ export function Dashboard() {
     };
 
     try {
-      const response = await fetch(
-        editingProject
-          ? `${API_URL}/api/projects/${editingProject.id}`
-          : `${API_URL}/api/projects`,
-        {
-          method: editingProject ? "PUT" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
+      const response = await fetch(`${API_URL}/api/projects`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(payload),
+      });
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
@@ -213,40 +189,6 @@ export function Dashboard() {
       });
     } finally {
       setIsSubmitting(false);
-    }
-  }
-
-  async function deleteProject(project: Project) {
-    if (!student) {
-      router.replace("/login?error=Invalid%20username%2Fpassword");
-      return;
-    }
-
-    setStatus(null);
-
-    try {
-      const response = await fetch(
-        `${API_URL}/api/projects/${project.id}?studentId=${student.id}`,
-        {
-          method: "DELETE",
-        },
-      );
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(getApiMessage(data, "Could not delete project."));
-      }
-
-      setStatus({
-        type: "success",
-        message: data.message ?? "Project deleted successfully.",
-      });
-      await loadProjects(student.id);
-    } catch (error) {
-      setStatus({
-        type: "error",
-        message: error instanceof Error ? error.message : "Could not delete project.",
-      });
     }
   }
 
@@ -294,10 +236,6 @@ export function Dashboard() {
               <p className="eyebrow dashboard-eyebrow">Projects</p>
               <h2 id="projects-title">Created and contributed work</h2>
             </div>
-            <button className="secondary-button" type="button" onClick={resetForm}>
-              <Plus aria-hidden="true" size={18} />
-              New project
-            </button>
           </div>
 
           {status ? (
@@ -324,6 +262,7 @@ export function Dashboard() {
                   </div>
                   <div className="project-actions">
                     <button
+                      className={favoriteProjects.includes(project.id) ? "project-favorite-button active" : "project-favorite-button"}
                       type="button"
                       onClick={() => toggleFavoriteProject(project.id)}
                       title="Save favorite project"
@@ -338,12 +277,6 @@ export function Dashboard() {
                     <button type="button" onClick={() => router.push(`/projects/${project.id}`)}>
                       View
                     </button>
-                    <button type="button" onClick={() => startEdit(project)} title="Edit">
-                      <Pencil aria-hidden="true" size={16} />
-                    </button>
-                    <button type="button" onClick={() => deleteProject(project)} title="Delete">
-                      <Trash2 aria-hidden="true" size={16} />
-                    </button>
                   </div>
                 </article>
               ))
@@ -352,7 +285,7 @@ export function Dashboard() {
         </div>
 
         <aside className="project-editor" aria-label="Project editor">
-          <h2>{editingProject ? "Edit project" : "Create project"}</h2>
+          <h2>Create project</h2>
           <form className="dashboard-form" onSubmit={submitProject}>
             <label>
               Title
@@ -420,7 +353,7 @@ export function Dashboard() {
             </label>
 
             <button className="primary-button" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : editingProject ? "Update project" : "Create project"}
+              {isSubmitting ? "Saving..." : "Create project"}
             </button>
           </form>
         </aside>
