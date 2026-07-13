@@ -25,7 +25,6 @@ type Student = {
   institutionName: string;
   course: string;
   skills: string[];
-  department: string | null;
   degree: string | null;
   year: string;
   rollNumber: string;
@@ -69,13 +68,6 @@ const profileFields = [
     autoComplete: "off",
   },
   {
-    label: "Department",
-    name: "department",
-    type: "text",
-    icon: Building2,
-    autoComplete: "off",
-  },
-  {
     label: "Degree",
     name: "degree",
     type: "text",
@@ -90,7 +82,7 @@ const profileFields = [
     autoComplete: "off",
   },
   {
-    label: "Year",
+    label: "Graduating Year",
     name: "year",
     type: "text",
     icon: CalendarDays,
@@ -135,7 +127,6 @@ const emptyProfile: ProfileForm = {
   institutionName: "",
   course: "",
   skills: "",
-  department: "",
   degree: "",
   year: "",
   rollNumber: "",
@@ -311,7 +302,6 @@ function toProfileForm(student: Student): ProfileForm {
     institutionName: student.institutionName ?? "",
     course: student.course ?? "",
     skills: student.skills?.join(", ") ?? "",
-    department: student.department ?? "",
     degree: student.degree ?? "",
     year: student.year ?? "",
     rollNumber: student.rollNumber ?? "",
