@@ -11,10 +11,14 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AppHeader } from "../components/app-header";
+import {
+  FAVORITE_PROFILES_KEY,
+  FAVORITE_PROJECTS_KEY,
+  readStoredFavoriteIds,
+  writeStoredFavoriteIds,
+} from "../favorite-storage";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4000";
-const FAVORITE_PROFILES_KEY = "projectsphere.favoriteProfiles";
-const FAVORITE_PROJECTS_KEY = "projectsphere.favoriteProjects";
 
 type FavoriteMode = "profiles" | "projects";
 
@@ -40,6 +44,7 @@ type Project = {
 export function Favorites() {
   const router = useRouter();
   const [mode, setMode] = useState<FavoriteMode>("profiles");
+  const [currentStudentId, setCurrentStudentId] = useState("");
   const [profileIds, setProfileIds] = useState<string[]>([]);
   const [projectIds, setProjectIds] = useState<string[]>([]);
   const [profiles, setProfiles] = useState<StudentProfile[]>([]);
@@ -84,8 +89,20 @@ export function Favorites() {
         return;
       }
 
-      const nextProfileIds = readStoredIds(FAVORITE_PROFILES_KEY);
-      const nextProjectIds = readStoredIds(FAVORITE_PROJECTS_KEY);
+      let studentId = "";
+
+      try {
+        studentId = (JSON.parse(storedStudent) as { id: string }).id;
+      } catch {
+        localStorage.removeItem("projectsphere.student");
+        router.replace("/login?error=Invalid%20username%2Fpassword");
+        return;
+      }
+
+      setCurrentStudentId(studentId);
+
+      const nextProfileIds = readStoredFavoriteIds(FAVORITE_PROFILES_KEY, studentId);
+      const nextProjectIds = readStoredFavoriteIds(FAVORITE_PROJECTS_KEY, studentId);
       setProfileIds(nextProfileIds);
       setProjectIds(nextProjectIds);
       void loadFavorites(nextProfileIds, nextProjectIds);
@@ -102,18 +119,23 @@ export function Favorites() {
   );
 
   function removeFavorite(kind: FavoriteMode, id: string) {
+    if (!currentStudentId) {
+      router.replace("/login?error=Invalid%20username%2Fpassword");
+      return;
+    }
+
     if (kind === "profiles") {
       const nextIds = profileIds.filter((profileId) => profileId !== id);
       setProfileIds(nextIds);
       setProfiles((current) => current.filter((profile) => profile.id !== id));
-      localStorage.setItem(FAVORITE_PROFILES_KEY, JSON.stringify(nextIds));
+      writeStoredFavoriteIds(FAVORITE_PROFILES_KEY, currentStudentId, nextIds);
       return;
     }
 
     const nextIds = projectIds.filter((projectId) => projectId !== id);
     setProjectIds(nextIds);
     setProjects((current) => current.filter((project) => project.id !== id));
-    localStorage.setItem(FAVORITE_PROJECTS_KEY, JSON.stringify(nextIds));
+    writeStoredFavoriteIds(FAVORITE_PROJECTS_KEY, currentStudentId, nextIds);
   }
 
   return (
@@ -284,15 +306,6 @@ async function fetchJson(url: string) {
   }
 
   return data;
-}
-
-function readStoredIds(key: string) {
-  try {
-    const storedValue = localStorage.getItem(key);
-    return storedValue ? (JSON.parse(storedValue) as string[]) : [];
-  } catch {
-    return [];
-  }
 }
 
 function getApiMessage(data: unknown, fallback: string) {

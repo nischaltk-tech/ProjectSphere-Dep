@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4000";
-const PASSWORD_POLICY = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+const PASSWORD_POLICY =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 const PASSWORD_MESSAGE =
   "Password must be at least 8 characters and include one uppercase letter, one lowercase letter, one numeral, and one special character.";
 
@@ -40,15 +41,23 @@ const registrationFields = [
     label: "Course",
     name: "course",
     type: "text",
-    placeholder: "B.Tech Computer Science",
+    placeholder: "Computer Science",
     icon: GraduationCap,
     autoComplete: "off",
   },
   {
-    label: "Year",
+    label: "Degree",
+    name: "degree",
+    type: "text",
+    placeholder: "B.Tech",
+    icon: GraduationCap,
+    autoComplete: "off",
+  },
+  {
+    label: "Graduating Year",
     name: "year",
     type: "text",
-    placeholder: "3rd Year",
+    placeholder: "2029",
     icon: CalendarDays,
     autoComplete: "off",
   },
@@ -56,7 +65,7 @@ const registrationFields = [
     label: "Roll Number",
     name: "rollNumber",
     type: "text",
-    placeholder: "21CS1042",
+    placeholder: "25112067",
     icon: Hash,
     autoComplete: "off",
   },
@@ -114,6 +123,7 @@ const initialState = {
   name: "",
   institutionName: "",
   course: "",
+  degree: "",
   year: "",
   rollNumber: "",
   email: "",
@@ -224,9 +234,13 @@ export function RegisterForm() {
                   placeholder={field.placeholder}
                   autoComplete={field.autoComplete}
                   value={form[field.name]}
-                  onChange={(event) => updateField(field.name, event.target.value)}
+                  onChange={(event) =>
+                    updateField(field.name, event.target.value)
+                  }
                   aria-invalid={
-                    (isPassword && form.password.length > 0 && !passwordIsValid) ||
+                    (isPassword &&
+                      form.password.length > 0 &&
+                      !passwordIsValid) ||
                     (isConfirmPassword && !passwordsMatch)
                   }
                   required
@@ -234,14 +248,19 @@ export function RegisterForm() {
               </div>
 
               {isPassword ? (
-                <ul className="password-rules" aria-label="Password requirements">
+                <ul
+                  className="password-rules"
+                  aria-label="Password requirements"
+                >
                   <li className={passwordChecks.uppercase ? "met" : ""}>
                     Uppercase letter
                   </li>
                   <li className={passwordChecks.lowercase ? "met" : ""}>
                     Lowercase letter
                   </li>
-                  <li className={passwordChecks.numeral ? "met" : ""}>Numeral</li>
+                  <li className={passwordChecks.numeral ? "met" : ""}>
+                    Numeral
+                  </li>
                   <li className={passwordChecks.special ? "met" : ""}>
                     Special character
                   </li>
@@ -260,8 +279,8 @@ export function RegisterForm() {
       </div>
 
       <p className="form-note">
-        Your profile will later connect to project showcases, resource links, and
-        portfolio publishing.
+        Your profile will later connect to project showcases, resource links,
+        and portfolio publishing.
       </p>
 
       {status ? (
@@ -279,7 +298,10 @@ export function RegisterForm() {
         <span>or</span>
       </div>
 
-      <a className="auth0-button" href="/auth/login?screen_hint=signup&returnTo=/auth/sync">
+      <a
+        className="auth0-button"
+        href="/auth/login?screen_hint=signup&returnTo=/auth/sync"
+      >
         Sign up with Auth0
       </a>
     </form>
@@ -287,11 +309,7 @@ export function RegisterForm() {
 }
 
 function getApiMessage(data: unknown, fallback: string) {
-  if (
-    typeof data === "object" &&
-    data !== null &&
-    "message" in data
-  ) {
+  if (typeof data === "object" && data !== null && "message" in data) {
     const message = (data as { message: unknown }).message;
 
     if (Array.isArray(message)) {

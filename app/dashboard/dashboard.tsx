@@ -8,9 +8,13 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AppHeader } from "../components/app-header";
+import {
+  FAVORITE_PROJECTS_KEY,
+  readStoredFavoriteIds,
+  writeStoredFavoriteIds,
+} from "../favorite-storage";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4000";
-const FAVORITE_PROJECTS_KEY = "projectsphere.favoriteProjects";
 
 type Student = {
   id: string;
@@ -86,7 +90,7 @@ export function Dashboard() {
       try {
         const parsedStudent = JSON.parse(storedStudent) as Student;
         setStudent(parsedStudent);
-        setFavoriteProjects(readStoredIds(FAVORITE_PROJECTS_KEY));
+        setFavoriteProjects(readStoredFavoriteIds(FAVORITE_PROJECTS_KEY, parsedStudent.id));
         void loadProjects(parsedStudent.id);
       } catch {
         localStorage.removeItem("projectsphere.student");
@@ -123,12 +127,17 @@ export function Dashboard() {
   }
 
   function toggleFavoriteProject(projectId: string) {
+    if (!student) {
+      router.replace("/login?error=Invalid%20username%2Fpassword");
+      return;
+    }
+
     const nextFavorites = favoriteProjects.includes(projectId)
       ? favoriteProjects.filter((id) => id !== projectId)
       : [...favoriteProjects, projectId];
 
     setFavoriteProjects(nextFavorites);
-    localStorage.setItem(FAVORITE_PROJECTS_KEY, JSON.stringify(nextFavorites));
+    writeStoredFavoriteIds(FAVORITE_PROJECTS_KEY, student.id, nextFavorites);
   }
 
   function updateField(field: keyof ProjectFormState, value: string) {
@@ -387,15 +396,6 @@ export function Dashboard() {
       </section>
     </main>
   );
-}
-
-function readStoredIds(key: string) {
-  try {
-    const storedValue = localStorage.getItem(key);
-    return storedValue ? (JSON.parse(storedValue) as string[]) : [];
-  } catch {
-    return [];
-  }
 }
 
 function splitList(value: string) {

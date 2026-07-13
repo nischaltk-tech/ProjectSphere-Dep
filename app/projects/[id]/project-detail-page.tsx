@@ -16,9 +16,13 @@ import {
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { AppHeader } from "../../components/app-header";
+import {
+  FAVORITE_PROJECTS_KEY,
+  readStoredFavoriteIds,
+  writeStoredFavoriteIds,
+} from "../../favorite-storage";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4000";
-const FAVORITE_PROJECTS_KEY = "projectsphere.favoriteProjects";
 
 type LinkItem = {
   label: string;
@@ -109,27 +113,35 @@ export function ProjectDetailPage() {
         return;
       }
 
+      let studentId = "";
+
       try {
         const parsedStudent = JSON.parse(storedStudent) as Student;
-        setCurrentStudentId(parsedStudent.id);
+        studentId = parsedStudent.id;
       } catch {
         localStorage.removeItem("projectsphere.student");
         router.replace("/login?error=Invalid%20username%2Fpassword");
         return;
       }
 
-      setFavoriteProjects(readStoredIds(FAVORITE_PROJECTS_KEY));
+      setCurrentStudentId(studentId);
+      setFavoriteProjects(readStoredFavoriteIds(FAVORITE_PROJECTS_KEY, studentId));
       void loadProject(params.id);
     });
   }, [params.id, router]);
 
   function toggleFavoriteProject(projectId: string) {
+    if (!currentStudentId) {
+      router.replace("/login?error=Invalid%20username%2Fpassword");
+      return;
+    }
+
     const nextFavorites = favoriteProjects.includes(projectId)
       ? favoriteProjects.filter((id) => id !== projectId)
       : [...favoriteProjects, projectId];
 
     setFavoriteProjects(nextFavorites);
-    localStorage.setItem(FAVORITE_PROJECTS_KEY, JSON.stringify(nextFavorites));
+    writeStoredFavoriteIds(FAVORITE_PROJECTS_KEY, currentStudentId, nextFavorites);
   }
 
   function updateEditField(field: keyof ProjectFormState, value: string) {
@@ -222,7 +234,7 @@ export function ProjectDetailPage() {
       }
 
       const nextFavorites = favoriteProjects.filter((id) => id !== project.id);
-      localStorage.setItem(FAVORITE_PROJECTS_KEY, JSON.stringify(nextFavorites));
+      writeStoredFavoriteIds(FAVORITE_PROJECTS_KEY, currentStudentId, nextFavorites);
       setFavoriteProjects(nextFavorites);
       router.push("/dashboard");
     } catch (error) {
@@ -401,15 +413,6 @@ export function ProjectDetailPage() {
       ) : null}
     </main>
   );
-}
-
-function readStoredIds(key: string) {
-  try {
-    const storedValue = localStorage.getItem(key);
-    return storedValue ? (JSON.parse(storedValue) as string[]) : [];
-  } catch {
-    return [];
-  }
 }
 
 function projectToForm(project: Project): ProjectFormState {

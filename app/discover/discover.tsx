@@ -13,9 +13,13 @@ import {
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppHeader } from "../components/app-header";
+import {
+  FAVORITE_PROFILES_KEY,
+  readStoredFavoriteIds,
+  writeStoredFavoriteIds,
+} from "../favorite-storage";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4000";
-const FAVORITES_KEY = "projectsphere.favoriteProfiles";
 
 type StudentResult = {
   id: string;
@@ -51,6 +55,7 @@ export function Discover() {
     skills: "",
   });
   const [students, setStudents] = useState<StudentResult[]>([]);
+  const [currentStudentId, setCurrentStudentId] = useState("");
   const [favorites, setFavorites] = useState<string[]>([]);
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(
     null,
@@ -100,8 +105,15 @@ export function Discover() {
         return;
       }
 
-      const storedFavorites = localStorage.getItem(FAVORITES_KEY);
-      setFavorites(storedFavorites ? JSON.parse(storedFavorites) : []);
+      try {
+        const parsedStudent = JSON.parse(storedStudent) as { id: string };
+        setCurrentStudentId(parsedStudent.id);
+        setFavorites(readStoredFavoriteIds(FAVORITE_PROFILES_KEY, parsedStudent.id));
+      } catch {
+        localStorage.removeItem("projectsphere.student");
+        router.replace("/login?error=Invalid%20username%2Fpassword");
+        return;
+      }
 
       if (searchParams.get("q")) {
         void searchStudents({
@@ -134,12 +146,17 @@ export function Discover() {
   }
 
   function toggleFavorite(studentId: string) {
+    if (!currentStudentId) {
+      router.replace("/login?error=Invalid%20username%2Fpassword");
+      return;
+    }
+
     const nextFavorites = favorites.includes(studentId)
       ? favorites.filter((id) => id !== studentId)
       : [...favorites, studentId];
 
     setFavorites(nextFavorites);
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(nextFavorites));
+    writeStoredFavoriteIds(FAVORITE_PROFILES_KEY, currentStudentId, nextFavorites);
   }
 
   return (
@@ -212,7 +229,7 @@ export function Discover() {
               <input
                 value={form.degree}
                 onChange={(event) => updateField("degree", event.target.value)}
-                placeholder="B.Tech"
+                placeholder="Undergraduate degree"
               />
             </label>
             <label>
