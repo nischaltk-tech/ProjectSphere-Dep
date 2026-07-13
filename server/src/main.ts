@@ -15,10 +15,11 @@ async function bootstrap() {
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);
-
+  console.log("Allowed Origins:", allowedOrigins);
   app.enableCors({
     origin: allowedOrigins,
     credentials: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
   });
   app.setGlobalPrefix("api");
   app.useGlobalPipes(
