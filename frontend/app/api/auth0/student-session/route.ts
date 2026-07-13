@@ -7,7 +7,10 @@ export async function GET() {
   const session = await auth0.getSession();
 
   if (!session?.user?.sub || !session.user.email) {
-    return NextResponse.json({ message: "Auth0 session not found." }, { status: 401 });
+    return NextResponse.json(
+      { message: "Auth0 session not found." },
+      { status: 401 },
+    );
   }
 
   const response = await fetch(`${API_URL}/api/students/auth0-sync`, {
