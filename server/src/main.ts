@@ -17,7 +17,7 @@ async function bootstrap() {
     .filter(Boolean);
   console.log("Allowed Origins:", allowedOrigins);
   app.enableCors({
-    origin: allowedOrigins,
+    origin: 'https://projectsphere6.netlify.app',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true
