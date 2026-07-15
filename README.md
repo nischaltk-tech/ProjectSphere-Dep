@@ -22,11 +22,12 @@ ProjectSphere is a student project showcase and collaboration platform. Students
 ## Repository structure
 
 ```text
-app/                 Next.js App Router pages and client components
-app/api/auth0/       Server-side Auth0 session-to-student sync route
-app/components/       Shared UI components
-lib/                 Auth0 client configuration
-server/src/          NestJS API, modules, DTOs, and database service
+frontend/                     Next.js Application
+frontend/app/                 Next.js App Router pages and client components
+frontend/app/api/auth0/       Server-side Auth0 session-to-student sync route
+frontend/app/components/      Shared UI components
+frontend/lib/                 Auth0 client configuration
+server/src/                   NestJS API, modules, DTOs, and database service
 ```
 
 ## Prerequisites
@@ -39,10 +40,11 @@ server/src/          NestJS API, modules, DTOs, and database service
 ## Local development
 
 1. Install dependencies:
-
-   ```bash
+   cd frontend
    npm install
-   ```
+   
+   cd server
+   npm install
 
 2. Create a local environment file. Use placeholder values; do not commit secrets.
 
@@ -50,20 +52,24 @@ server/src/          NestJS API, modules, DTOs, and database service
    Copy-Item .env.example .env
    ```
 
-3. Update `.env` with your own values:
+3. Update `.env` with your own values for both frontend and server:
 
-   ```dotenv
-   DATABASE_URL=postgres://postgres:postgres@localhost:5432/projectsphere
-   API_PORT=4000
-   FRONTEND_ORIGIN=http://localhost:3000
+   ```dotenv for frontend
    NEXT_PUBLIC_API_URL=http://localhost:4000
 
-   APP_BASE_URL=http://localhost:3000
+   APP_BASE_URL=http://localhost:3001
    AUTH0_DOMAIN=your-tenant.us.auth0.com
    AUTH0_CLIENT_ID=your-client-id
    AUTH0_CLIENT_SECRET=your-client-secret
    AUTH0_SECRET=a-long-random-secret
    ```
+
+   ```dotenv for frontend
+   DATABASE_URL=postgres://postgres:postgres@localhost:5432/projectsphere
+   API_PORT=4000
+   FRONTEND_ORIGIN=http://localhost:3001
+   ```
+   
 
 4. Start PostgreSQL (optional if using an existing PostgreSQL instance):
    pgAdmin4 Tool
@@ -77,10 +83,10 @@ server/src/          NestJS API, modules, DTOs, and database service
 6. Start the frontend in a second terminal:
 
    ```bash
-   npm run dev
+   npm run dev -- --port 3001
    ```
 
-7. Open [http://localhost:3000]
+7. Open [http://localhost:3001]
 
 The API initializes its `students` and `project` tables on startup.
 
@@ -113,7 +119,7 @@ The NestJS service runs with the `/api` prefix.
 This is the recommended production layout:
 
 ```text
-Browser -> Vercel (Next.js frontend) -> Railway (NestJS API) -> Railway PostgreSQL
+Browser -> Netlify (Next.js frontend) -> Render (NestJS API) -> Supabase PostgreSQL
                               |
                               +-> Auth0
 ```
